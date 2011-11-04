@@ -76,19 +76,15 @@ end
 CALL_QUEUES = {}
 
 ### DISPATCHER THREAD
-# This thread multiplexes the event stream from the underlying connection handler and routes them
-# to the correct queue for each call.  It also starts a call handler, the run_call method) after creating
-# the queue.
+# This thread multiplexes the event stream from the underlying connection
+# handler and routes them to the correct queue for each call.  It also starts
+# a call handler, the run_call method) after creating the queue.
 Thread.new do
   loop do
     event = client.event_queue.pop
-    if event == Connection::Connected
-      puts event
-      puts "Waiting for a call..."
-      next
-    end
-    puts "#{event.class} event for call: #{event.call_id}"
     case event
+    when Punchblock::Connection::Connected
+      puts "Punchblock connected!"
     when Event::Offer
       raise "Duplicate call ID for #{event.call_id}" if CALL_QUEUES.has_key?(event.call_id)
       CALL_QUEUES[event.call_id] = Queue.new
