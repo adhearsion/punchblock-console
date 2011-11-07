@@ -11,7 +11,7 @@ include Punchblock
 
 Thread.abort_on_exception = true
 
-options = { :username => 'usera@127.0.0.1', :password => '1', :wire_log_file => 'rayo-wire.log', :transport_log_file => 'rayo-transport.log', :auto_reconnect => false }
+options = { :username => 'usera@127.0.0.1', :password => '1', :auto_reconnect => false }
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: punchblock-console [-u usera@127.0.0.1] [-p abc123]"
@@ -47,12 +47,17 @@ rescue
   option_parser.parse '--help'
 end
 
-options[:wire_logger] = Logger.new options.delete(:wire_log_file)
-options[:wire_logger].level = Logger::DEBUG
-options[:wire_logger].debug "Starting up..."
-options[:transport_logger] = Logger.new options.delete(:transport_log_file)
-options[:transport_logger].level = Logger::DEBUG
-options[:transport_logger].debug "Starting up..."
+if options.has_key? :wire_log_file
+  options[:wire_logger] = Logger.new options.delete(:wire_log_file)
+  options[:wire_logger].level = Logger::DEBUG
+  options[:wire_logger].debug "Starting up..."
+end
+
+if options.has_key? :transport_log_file
+  options[:transport_logger] = Logger.new options.delete(:transport_log_file)
+  options[:transport_logger].level = Logger::DEBUG
+  options[:transport_logger].debug "Starting up..."
+end
 
 connection = Connection::XMPP.new options
 client = Client.new :connection => connection
