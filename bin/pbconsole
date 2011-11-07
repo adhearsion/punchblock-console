@@ -1,17 +1,13 @@
 #!/usr/bin/env ruby
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 require 'rubygems'
-require 'punchblock'
-require 'pry'
 require 'logger'
 require 'optparse'
-require 'punchblock/console/commands'
+require 'punchblock/console/cli'
 
-include Punchblock
-
-Thread.abort_on_exception = true
-
-options = { :username => 'usera@127.0.0.1', :password => '1', :auto_reconnect => false }
+options = { :username       => 'usera@127.0.0.1',
+            :password       => '1',
+            :auto_reconnect => false }
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: punchblock-console [-u usera@127.0.0.1] [-p abc123]"
@@ -47,77 +43,4 @@ rescue
   option_parser.parse '--help'
 end
 
-if options.has_key? :wire_log_file
-  options[:wire_logger] = Logger.new options.delete(:wire_log_file)
-  options[:wire_logger].level = Logger::DEBUG
-  options[:wire_logger].debug "Starting up..."
-end
-
-if options.has_key? :transport_log_file
-  options[:transport_logger] = Logger.new options.delete(:transport_log_file)
-  options[:transport_logger].level = Logger::DEBUG
-  options[:transport_logger].debug "Starting up..."
-end
-
-connection = Connection::XMPP.new options
-client = Client.new :connection => connection
-
-[:INT, :TERM].each do |signal|
-  trap signal do
-    puts "Shutting down!"
-    client.stop
-  end
-end
-
-client_thread = Thread.new do
-  begin
-    client.run
-  rescue => e
-    puts "Exception in XMPP thread! #{e.message}"
-    puts e.backtrace.join("\t\n")
-  end
-end
-
-CALL_QUEUES = {}
-
-### DISPATCHER THREAD
-# This thread multiplexes the event stream from the underlying connection
-# handler and routes them to the correct queue for each call.  It also starts
-# a call handler, the run_call method) after creating the queue.
-Thread.new do
-  loop do
-    event = client.event_queue.pop
-    case event
-    when Punchblock::Connection::Connected
-      puts "Punchblock connected!"
-    when Event::Offer
-      raise "Duplicate call ID for #{event.call_id}" if CALL_QUEUES.has_key?(event.call_id)
-      CALL_QUEUES[event.call_id] = Queue.new
-      CALL_QUEUES[event.call_id].push event
-      run_call client, event
-    when Event
-      CALL_QUEUES[event.call_id].push event
-    else
-      puts "Unknown event: #{event.inspect}"
-    end
-  end
-end
-
-def run_call(client, offer)
-  ### CALL THREAD
-  # One thread is spun up to handle each call.
-  Thread.new do
-    raise "Unknown call #{offer.call_id}" unless CALL_QUEUES.has_key?(offer.call_id)
-    queue = CALL_QUEUES[offer.call_id]
-    call = queue.pop
-    commands = PunchblockConsole::Commands.new client, offer.call_id, queue
-
-    puts "Incoming offer to #{offer.to} from #{offer.headers_hash[:from]} #{offer}"
-    commands.pry
-
-    # Clean up the queue.
-    CALL_QUEUES[offer.call_id] = nil
-  end
-end
-
-client_thread.join
+PunchblockConsole::CLI.new(options).run
