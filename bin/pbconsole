@@ -5,7 +5,7 @@ require 'punchblock'
 require 'pry'
 require 'logger'
 require 'optparse'
-require 'punchblock_console/commands'
+require 'punchblock/console/commands'
 
 include Punchblock
 
