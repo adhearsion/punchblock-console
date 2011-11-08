@@ -1,3 +1,14 @@
-Gemfile.lock
 .*.swp
 .*.swo
+*.gem
+.bundle
+Gemfile.lock
+pkg/*
+.rvmrc
+.yardoc
+doc
+log/*
+spec/reports
+vendor
+.rbx/
+*.rbc
