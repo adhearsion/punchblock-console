@@ -68,6 +68,7 @@ module PunchblockConsole
           event = client.event_queue.pop
           case event
           when Connection::Connected
+            connection.ready!
             puts "Punchblock connected!"
           when Event::Offer
             raise "Duplicate call ID for #{event.call_id}" if call_queues.has_key?(event.call_id)
