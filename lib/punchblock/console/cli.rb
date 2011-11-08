@@ -13,6 +13,7 @@ module PunchblockConsole
     def initialize(options)
       @options = options
       setup_logging
+      @prompt       = options.delete(:prompt)
       @connection   = options.delete(:connection_class).new options
       @client       = Client.new :connection => connection
       @call_queues  = {}
@@ -41,7 +42,20 @@ module PunchblockConsole
 
     def run
       run_dispatcher
-      client.run
+      client_thread = run_client
+      pry if @prompt
+      client_thread.join
+    end
+
+    def run_client
+      Thread.new do
+        begin
+          client.run
+        rescue => e
+          puts "Exception in Punchblock client thread! #{e.message}"
+          puts e.backtrace.join("\t\n")
+        end
+      end
     end
 
     def run_dispatcher
@@ -53,7 +67,7 @@ module PunchblockConsole
         loop do
           event = client.event_queue.pop
           case event
-          when Punchblock::Connection::Connected
+          when Connection::Connected
             puts "Punchblock connected!"
           when Event::Offer
             raise "Duplicate call ID for #{event.call_id}" if call_queues.has_key?(event.call_id)

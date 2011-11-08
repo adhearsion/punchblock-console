@@ -32,6 +32,9 @@ option_parser = OptionParser.new do |opts|
     options[:host] = '127.0.0.1'
     options[:port] = 5038
   end
+  opts.on("--prompt", "Provide a prompt immediately") do |tlf|
+    options[:prompt] = true
+  end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit
