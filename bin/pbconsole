@@ -5,9 +5,10 @@ require 'logger'
 require 'optparse'
 require 'punchblock/console/cli'
 
-options = { :username       => 'usera@127.0.0.1',
-            :password       => '1',
-            :auto_reconnect => false }
+options = { :username         => 'usera@127.0.0.1',
+            :password         => '1',
+            :auto_reconnect   => false,
+            :connection_class => Connection::XMPP }
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: punchblock-console [-u usera@127.0.0.1] [-p abc123]"
@@ -25,6 +26,11 @@ option_parser = OptionParser.new do |opts|
   end
   opts.on("--transport-log-file log/transportlog.log", String, "Specify the file to which the transport log should be written") do |tlf|
     options[:transport_log_file] = tlf
+  end
+  opts.on("--asterisk", "Use Asterisk") do |tlf|
+    options[:connection_class] = Connection::Asterisk
+    options[:host] = '127.0.0.1'
+    options[:port] = 5038
   end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts

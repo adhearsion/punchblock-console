@@ -13,7 +13,7 @@ module PunchblockConsole
     def initialize(options)
       @options = options
       setup_logging
-      @connection   = Connection::XMPP.new options
+      @connection   = options.delete(:connection_class).new options
       @client       = Client.new :connection => connection
       @call_queues  = {}
 
@@ -61,7 +61,11 @@ module PunchblockConsole
             call_queues[event.call_id].push event
             run_call client, event
           when Event
-            call_queues[event.call_id].push event
+            if event.call_id
+              call_queues[event.call_id].push event
+            else
+              puts "Ad-hoc event: #{event.inspect}"
+            end
           else
             puts "Unknown event: #{event.inspect}"
           end
