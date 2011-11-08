@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.3.7") if s.respond_to? :required_rubygems_version=
 
-  s.add_runtime_dependency %q<punchblock>, [">= 0.5.0"]
+  s.add_runtime_dependency %q<punchblock>, [">= 0.6.1"]
 
   s.add_development_dependency %q<bundler>, ["~> 1.0.0"]
   s.add_development_dependency %q<rspec>, ["~> 2.3.0"]
