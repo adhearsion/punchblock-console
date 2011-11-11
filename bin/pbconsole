@@ -21,11 +21,8 @@ option_parser = OptionParser.new do |opts|
   opts.on("-d", "--rayo-domain DOMAIN", String, "Specify the domain Rayo is running on") do |d|
     options[:rayo_domain] = d
   end
-  opts.on("--wire-log-file log/wirelog.log", String, "Specify the file to which the wire log should be written") do |wlf|
-    options[:wire_log_file] = wlf
-  end
-  opts.on("--transport-log-file log/transportlog.log", String, "Specify the file to which the transport log should be written") do |tlf|
-    options[:transport_log_file] = tlf
+  opts.on("--log-file log/punchblock.log", String, "Specify the file to which the log should be written") do |lf|
+    options[:log_file] = lf
   end
   opts.on("--asterisk", "Use Asterisk") do |tlf|
     options[:connection_class] = Connection::Asterisk

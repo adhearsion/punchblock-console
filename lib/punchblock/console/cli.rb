@@ -1,6 +1,7 @@
 require 'punchblock'
 require 'pry'
 require 'punchblock/console/commands'
+require 'punchblock/console/logging'
 
 include Punchblock
 
@@ -12,7 +13,8 @@ module PunchblockConsole
 
     def initialize(options)
       @options = options
-      setup_logging
+      PunchblockConsole::Logging.start @options.delete(:log_file)
+      logger.info "Starting up..."
       @prompt       = options.delete(:prompt)
       @connection   = options.delete(:connection_class).new options
       @client       = Client.new :connection => connection
@@ -20,23 +22,9 @@ module PunchblockConsole
 
       [:INT, :TERM].each do |signal|
         trap signal do
-          puts "Shutting down!"
+          logger.info "Shutting down!"
           client.stop
         end
-      end
-    end
-
-    def setup_logging
-      if options.has_key? :wire_log_file
-        options[:wire_logger] = Logger.new options.delete(:wire_log_file)
-        options[:wire_logger].level = Logger::DEBUG
-        options[:wire_logger].debug "Starting up..."
-      end
-
-      if options.has_key? :transport_log_file
-        options[:transport_logger] = Logger.new options.delete(:transport_log_file)
-        options[:transport_logger].level = Logger::DEBUG
-        options[:transport_logger].debug "Starting up..."
       end
     end
 
@@ -52,8 +40,8 @@ module PunchblockConsole
         begin
           client.run
         rescue => e
-          puts "Exception in Punchblock client thread! #{e.message}"
-          puts e.backtrace.join("\t\n")
+          logger.error "Exception in Punchblock client thread! #{e.message}"
+          logger.error e.backtrace.join("\t\n")
         end
       end
     end
@@ -79,10 +67,10 @@ module PunchblockConsole
             if event.call_id
               call_queues[event.call_id].push event
             else
-              puts "Ad-hoc event: #{event.inspect}"
+              # puts "Ad-hoc event: #{event.inspect}"
             end
           else
-            puts "Unknown event: #{event.inspect}"
+            logger.warn "Unknown event: #{event.inspect}"
           end
         end
       end
@@ -96,7 +84,7 @@ module PunchblockConsole
         queue = call_queues[offer.call_id]
         call = queue.pop
 
-        puts "Incoming offer to #{offer.to} from #{offer.headers_hash[:from]} #{offer}"
+        puts "Incoming offer to #{offer.to} from #{offer.from} #{offer}"
 
         PunchblockConsole::Commands.new(client, offer.call_id, queue).pry
 
