@@ -28,8 +28,12 @@ module PunchblockConsole
       write Component::Record.new(options)
     end
 
-    def say(string, type = :text) # :nodoc:
-      component = Component::Tropo::Say.new(type => string)
+    def say(string)
+      output string, :text
+    end
+
+    def output(string, type = :text) # :nodoc:
+      component = Component::Output.new(type => string)
       write component
       component.complete_event.resource
     end
