@@ -28,10 +28,20 @@ module PunchblockConsole
       write Component::Record.new(options)
     end
 
-    def say(string, type = :text) # :nodoc:
-      component = Component::Tropo::Say.new(type => string)
+    def say(string)
+      output string, :text
+    end
+
+    def output(string, type = :text) # :nodoc:
+      component = Component::Output.new(type => string)
       write component
       component.complete_event.resource
+    end
+
+    def agi(command, params = {})
+      component = Component::Asterisk::AGI::Command.new :name => command, :params => params
+      write component
+      puts component.complete_event.resource
     end
 
     def write(command) # :nodoc:
