@@ -34,6 +34,12 @@ module PunchblockConsole
       component.complete_event.resource
     end
 
+    def agi(command, params = {})
+      component = Component::Asterisk::AGI::Command.new :name => command, :params => params
+      write component
+      puts component.complete_event.resource
+    end
+
     def write(command) # :nodoc:
       @client.execute_command command, :call_id => @call_id, :async => false
     end
