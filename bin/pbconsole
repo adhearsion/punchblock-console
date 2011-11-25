@@ -4,6 +4,7 @@ require 'rubygems'
 require 'logger'
 require 'optparse'
 require 'punchblock/console/cli'
+require 'punchblock/version'
 
 options = { :username         => 'usera@127.0.0.1',
             :password         => '1',
@@ -37,7 +38,8 @@ option_parser = OptionParser.new do |opts|
     exit
   end
   opts.on_tail("-v", "--version", "Show version") do
-    puts VERSION
+    puts "Punchblock Console: v#{PunchblockConsole::VERSION}"
+    puts "Punchblock: v#{Punchblock::VERSION}"
     exit
   end
 end
