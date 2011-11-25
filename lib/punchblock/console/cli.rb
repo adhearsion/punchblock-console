@@ -42,7 +42,8 @@ module PunchblockConsole
         rescue Punchblock::ProtocolError => e
           case e.name
           when 'Blather::Stream::ConnectionFailed'
-            abort "The connection to the XMPP server failed. This could be due to a network failure or the server may not be started or accepting connections."
+            puts "The connection to the XMPP server failed. This could be due to a network failure or the server may not be started or accepting connections."
+            $option_parser.parse '--help'
           else
             logger.error "Exception in Punchblock client thread! #{e.message}"
             logger.error e.backtrace.join("\t\n")

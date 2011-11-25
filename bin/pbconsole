@@ -11,7 +11,7 @@ options = { :username         => 'usera@127.0.0.1',
             :auto_reconnect   => false,
             :connection_class => Connection::XMPP }
 
-option_parser = OptionParser.new do |opts|
+$option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: punchblock-console [-u usera@127.0.0.1] [-p abc123]"
   opts.on("-u", "--username USERNAME", String, "Specify the XMPP JID to connect to") do |u|
     options[:username] = u
@@ -45,10 +45,10 @@ option_parser = OptionParser.new do |opts|
 end
 
 begin
-  option_parser.parse!
+  $option_parser.parse!
 rescue
   puts $!
-  option_parser.parse '--help'
+  $option_parser.parse '--help'
 end
 
 PunchblockConsole::CLI.new(options).run
