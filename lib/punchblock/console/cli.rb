@@ -39,11 +39,14 @@ module PunchblockConsole
       Thread.new do
         begin
           client.run
-        rescue Blather::Stream::ConnectionFailed
-          logger.error "The connection to the XMPP server failed. This could be due to a network failure or the server may not be started or accepting connections."
-        rescue => e
-          logger.error "Exception in Punchblock client thread! #{e.message}"
-          logger.error e.backtrace.join("\t\n")
+        rescue Punchblock::ProtocolError => e
+          case e.name
+          when 'Blather::Stream::ConnectionFailed'
+            abort "The connection to the XMPP server failed. This could be due to a network failure or the server may not be started or accepting connections."
+          else
+            logger.error "Exception in Punchblock client thread! #{e.message}"
+            logger.error e.backtrace.join("\t\n")
+          end
         end
       end
     end
