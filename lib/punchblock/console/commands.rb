@@ -35,13 +35,13 @@ module PunchblockConsole
     def output(string, type = :text) # :nodoc:
       component = Component::Output.new(type => string)
       write component
-      component.complete_event.resource
+      component.complete_event
     end
 
     def agi(command, params = {})
       component = Component::Asterisk::AGI::Command.new :name => command, :params => params
       write component
-      puts component.complete_event.resource
+      component.complete_event
     end
 
     def write(command) # :nodoc:
