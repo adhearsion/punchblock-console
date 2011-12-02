@@ -4,6 +4,7 @@ require 'rubygems'
 require 'logger'
 require 'optparse'
 require 'punchblock/console/cli'
+require 'punchblock/console/version'
 require 'punchblock/version'
 
 options = { :username         => 'usera@127.0.0.1',
