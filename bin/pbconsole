@@ -7,7 +7,7 @@ require 'punchblock/console/cli'
 require 'punchblock/console/version'
 require 'punchblock/version'
 
-options = { :username         => 'usera@127.0.0.1',
+options = { :username         => 'usera@localhost',
             :password         => '1',
             :auto_reconnect   => false,
             :connection_class => Connection::XMPP }
