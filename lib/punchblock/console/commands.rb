@@ -16,7 +16,7 @@ module PunchblockConsole
       write Command::Hangup.new
     end
 
-    def reject(reason = nil) # :nodoc:
+    def reject(reason = :decline) # :nodoc:
       write Command::Reject.new(:reason => reason)
     end
 
