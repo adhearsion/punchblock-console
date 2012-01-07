@@ -1,26 +1,26 @@
 module PunchblockConsole
   class Commands
-    def initialize(client, call_id, queue) # :nodoc:
+    def initialize(client, call_id, queue)
       @client, @call_id, @queue = client, call_id, queue
     end
 
-    def accept # :nodoc:
+    def accept
       write Command::Accept.new
     end
 
-    def answer # :nodoc:
+    def answer
       write Command::Answer.new
     end
 
-    def hangup # :nodoc:
+    def hangup
       write Command::Hangup.new
     end
 
-    def reject(reason = :decline) # :nodoc:
+    def reject(reason = :decline)
       write Command::Reject.new(:reason => reason)
     end
 
-    def redirect(dest) # :nodoc:
+    def redirect(dest)
       write Command::Redirect.new(:to => dest)
     end
 
@@ -32,7 +32,7 @@ module PunchblockConsole
       output string, :text
     end
 
-    def output(string, type = :text) # :nodoc:
+    def output(string, type = :text)
       component = Component::Output.new(type => string)
       write component
       component.complete_event
@@ -44,7 +44,7 @@ module PunchblockConsole
       component.complete_event
     end
 
-    def write(command) # :nodoc:
+    def write(command)
       @client.execute_command command, :call_id => @call_id, :async => false
     end
   end
